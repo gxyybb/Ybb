@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ybb.api.RetrofitInstance
 import com.example.ybb.dao.UserDao
 import com.example.ybb.entity.User
 import com.example.ybb.ui.theme.YbbTheme
@@ -58,6 +59,11 @@ class MainActivity : AppCompatActivity() {
                         vm.getAll()
                     }) {
                         Text("日志")
+                    }
+                    Button(onClick = {
+                        vm.asyncApi()
+                    }) {
+                        Text("网络请求")
                     }
                 }
 
@@ -104,6 +110,15 @@ class MainViewModel @Inject constructor(
     // 简单的加法操作
     fun add(): Int {
         return 5
+    }
+
+
+    fun asyncApi(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val response =   RetrofitInstance.apiService.test()
+            Log.i("response",response)
+        }
+
     }
 
     // 增加用户

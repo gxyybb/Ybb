@@ -1,5 +1,7 @@
 [versions]
 agp = "8.5.2"
+converterGson = "2.11.0"
+converterScalarsVersion = "2.9.0"
 hiltAndroid = "2.51.1"
 hiltAndroidCompiler = "2.51.1"
 kotlin = "1.9.0"
@@ -11,6 +13,7 @@ lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
 composeBom = "2025.02.00"
 appcompat = "1.7.0"
+retrofit = "2.11.0"
 roomCommon = "2.6.1"
 roomKtx = "2.6.1"
 
@@ -25,6 +28,7 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "roomCommon" }
 androidx-room-rxjava3 = { module = "androidx.room:room-rxjava3", version.ref = "roomCommon" }
 androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "roomCommon" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -41,6 +45,8 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit2-converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "converterScalarsVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

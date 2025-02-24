@@ -76,6 +76,10 @@ dependencies {
 
     // optional - Test helpers
     testImplementation(libs.androidx.room.testing)
+    // https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.retrofit2.converter.scalars) // 使用 ScalarsConverterFactory
 
     // optional - Paging 3 Integration
     implementation(libs.androidx.room.paging)

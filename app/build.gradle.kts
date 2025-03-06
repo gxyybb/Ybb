@@ -54,13 +54,17 @@ android {
 dependencies {
 
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.navigation.runtime.android)
 
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
     // See Add the KSP plugin to your project
     kapt(libs.androidx.room.compiler)
+// https://mvnrepository.com/artifact/androidx.navigation/navigation-fragment-ktx
+// https://mvnrepository.com/artifact/androidx.navigation/navigation-compose
+    implementation(libs.androidx.navigation.compose)
 
-    // If this project only uses Java source, use the Java annotationProcessor
-    // No additional plugins are necessary
+// https://mvnrepository.com/artifact/com.google.accompanist/accompanist-pager
+    implementation(libs.accompanist.pager)
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation(libs.androidx.room.ktx)
@@ -73,6 +77,7 @@ dependencies {
 
     // optional - Guava support for Room, including Optional and ListenableFuture
     implementation(libs.androidx.room.guava)
+    implementation(libs.mmkv)
 
     // optional - Test helpers
     testImplementation(libs.androidx.room.testing)

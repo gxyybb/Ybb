@@ -27,6 +27,8 @@ object MMKVManager {
     /** 存储 & 读取 用户名 */
     private const val KEY_USERNAME = "key_username"
 
+    private const val SUBJECT_ID = "subject_id"
+
     fun setWordFirstUsed(isFirst:Boolean){
         mmkv.encode(WORD_FIRST_USED,isFirst)
     }
@@ -55,7 +57,7 @@ object MMKVManager {
     }
 
     fun getUserToken(): String? {
-        return mmkv.decodeString(KEY_USER_TOKEN, null)
+        return mmkv.decodeString(KEY_USER_TOKEN, "")
     }
 
 
@@ -68,8 +70,7 @@ object MMKVManager {
         return mmkv.decodeString(KEY_USERNAME, null)
     }
 
-    /** 清除所有数据 */
-    fun clearAll() {
-        mmkv.clearAll()
-    }
+
+
+
 }

@@ -12,10 +12,11 @@ import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
 
-    private const val BASE_URL = "http://172.20.10.6:8085/"
+    private const val BASE_URL = "http://172.20.10.6:8087/"
 
     // 定义 OkHttp 拦截器，用于打印请求和响应信息
     private val loggingInterceptor = Interceptor { chain ->
@@ -44,6 +45,9 @@ object RetrofitInstance {
     // 创建 OkHttpClient 并添加拦截器
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
             .build()
     }

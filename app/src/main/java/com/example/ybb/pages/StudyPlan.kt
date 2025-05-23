@@ -149,7 +149,7 @@ fun StudyPlan(vm: MainViewModel, onBack: () -> Unit) {
             Row(  modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 Text("${studyForm.count { it.completionStatus == 1 }} / ${studyForm.count()}")
                 Spacer(modifier = Modifier.weight(1f))
-                Text("剩余${barUiState.countByDay - barUiState.completeDays}天")
+                Text("剩余${barUiState.totalDays - barUiState.completeDays}天")
             }
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -55,6 +55,10 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.navigation.runtime.android)
+    // https://mvnrepository.com/artifact/org.jetbrains/markdown
+    runtimeOnly(libs.markdown)
+
+
 
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
     // See Add the KSP plugin to your project

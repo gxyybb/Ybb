@@ -55,6 +55,13 @@ class SubjectService{
         }
     }
 }
+object ChatService{
+    suspend fun chat(
+        chat: String
+    ): ResultVO<String>{
+        return apiService.chat(chat)
+    }
+}
 
 object WordService{
     //1

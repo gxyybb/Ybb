@@ -1,8 +1,38 @@
 package com.example.ybb
 
 import android.util.Log
+import android.webkit.WebView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ybb.api.ChatService
 import com.example.ybb.api.LoginService
 import com.example.ybb.api.PlanService
 import com.example.ybb.api.SubjectService
@@ -24,7 +54,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
@@ -55,6 +88,8 @@ data class BarUiState(
     val isDayComplete: Boolean = false,
 )
 
+data class ChatData(val msg: String,val isMe: Boolean)
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
 ) : ViewModel() {
@@ -79,6 +114,9 @@ class MainViewModel @Inject constructor(
     private val _studyForm = MutableStateFlow(emptyList<WordGroupDateGroup>())
     val studyForm: StateFlow<List<WordGroupDateGroup>> = _studyForm
 
+    private val _chatList = MutableStateFlow<List<ChatData>>(emptyList())
+    val chatList: StateFlow<List<ChatData>> = _chatList
+
 
     private var barLoadJob: Job? = null
     private var changeDayJob: Job? = null
@@ -97,6 +135,38 @@ class MainViewModel @Inject constructor(
         }
 
     }
+    private val chatMutex = Mutex()
+
+    fun chat(msg: String) {
+        viewModelScope.launch {
+            chatMutex.withLock {
+                // 先更新UI，把我的消息添加进去（主线程操作）
+                withContext(Dispatchers.Main) {
+                    _chatList.update { oldList -> oldList + ChatData(msg, isMe = true) }
+                }
+
+                // 调用网络请求（IO线程）
+                val chat = withContext(Dispatchers.IO) {
+                    ChatService.chat(msg)
+                }
+
+                // 更新AI回复（主线程）
+                withContext(Dispatchers.Main) {
+                    if (chat.code == 200) {
+                        chat.msg?.let { reply ->
+                            _chatList.update { oldList -> oldList + ChatData(reply, isMe = false) }
+                        }
+                    } else {
+                        _chatList.update { oldList -> oldList + ChatData("请求失败: ${chat.msg}", isMe = false) }
+                    }
+                }
+            }
+            Log.i(TAG,"_chatList:${_chatList.value.toString()}")
+        }
+    }
+
+
+
 
     fun getStudyForm() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -362,6 +432,7 @@ class MainViewModel @Inject constructor(
                                 )
 
                                 val plan = PlanService.makePlan(subject, count)
+                                loadPlans()
                                 Log.i(TAG, "planCode:${plan.code}")
                                 if (plan.code == 200) {
                                     MMKVManager.setWordPlan(true)
@@ -447,4 +518,5 @@ class MainViewModel @Inject constructor(
         }
     }
 }
+
 

@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -191,6 +192,9 @@ fun MainScreen(vm: MainViewModel, studyPlanState: StudyPlanState, toStudyPlan: (
         CenterItemMode.COVER_CHINESE to "遮住中文",
         CenterItemMode.COVER_ENGLISH to "遮住英文"
     )
+    var showChat by remember { mutableStateOf(false) }
+    var showWordLearning by remember { mutableStateOf(false) }
+
     if (showSheet) {
         ModalBottomSheet(
             onDismissRequest = { showSheet = false }
@@ -238,6 +242,25 @@ fun MainScreen(vm: MainViewModel, studyPlanState: StudyPlanState, toStudyPlan: (
                         }
                     }
                 }
+                Button(
+                    onClick = {
+                        showSheet = false
+                        showWordLearning = true
+                              },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(50), // 圆角按钮
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary, // 背景色
+                        contentColor = Color.White // 文本颜色
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                ) {
+                    Text(text = "单词拼写", style = MaterialTheme.typography.labelLarge)
+                }
+
             }
         }
     }
@@ -256,60 +279,77 @@ fun MainScreen(vm: MainViewModel, studyPlanState: StudyPlanState, toStudyPlan: (
         is LoadState.Success -> {
             Scaffold(
                 topBar = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center, // 加这一行
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White)
                             .padding(top = 30.dp, bottom = 10.dp)
                     ) {
-                        Icon(
-                            modifier = Modifier
-                                .clickable(enabled = barUiState.day > 0) {
-                                    if (barUiState.day > 0) {
-                                        vm.dayClick(barUiState.day - 1)
-                                    }
-                                }
-                                .then(
-                                    Modifier.graphicsLayer(
-                                        alpha = if (barUiState.day == 0) 0.5f else 1f
-                                    )
-                                ),
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = "上"
-                        )
+                        // 中间导航按钮组
                         Row(
-                            modifier = Modifier
-                                .padding(start = 10.dp)
-                                .clickable {
-                                    showSheet = !showSheet
-                                }) {
-                            Text(text = "Day${barUiState.day}", fontSize = 20.sp)
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.align(Alignment.Center)
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "展开或收起",
-                                modifier = Modifier.rotate(if (showSheet) 180f else 0f)
+                                modifier = Modifier
+                                    .clickable(enabled = barUiState.day > 0) {
+                                        if (barUiState.day > 0) {
+                                            vm.dayClick(barUiState.day - 1)
+                                        }
+                                    }
+                                    .then(
+                                        Modifier.graphicsLayer(
+                                            alpha = if (barUiState.day == 0) 0.5f else 1f
+                                        )
+                                    ),
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                contentDescription = "上"
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .padding(start = 10.dp)
+                                    .clickable {
+                                        showSheet = !showSheet
+                                    }) {
+                                Text(text = "Day${barUiState.day}", fontSize = 20.sp)
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "展开或收起",
+                                    modifier = Modifier.rotate(if (showSheet) 180f else 0f)
+                                )
+                            }
+                            Icon(
+                                modifier = Modifier
+                                    .clickable(enabled = barUiState.day < barUiState.totalDays && barUiState.isDayComplete) {
+                                        if (barUiState.day < barUiState.totalDays) {
+                                            vm.dayClick(barUiState.day + 1)
+                                        }
+                                    }
+                                    .then(
+                                        Modifier.graphicsLayer(
+                                            alpha = if (barUiState.day == barUiState.totalDays || !barUiState.isDayComplete) 0.5f else 1f
+                                        )
+                                    ),
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = "下"
                             )
                         }
-                        Icon(
-                            modifier = Modifier
-                                .clickable(enabled = barUiState.day < barUiState.totalDays && barUiState.isDayComplete) {
-                                    if (barUiState.day < barUiState.totalDays) {
-                                        vm.dayClick(barUiState.day + 1)
-                                    }
-                                }
-                                .then(
-                                    Modifier.graphicsLayer(
-                                        alpha = if (barUiState.day == barUiState.totalDays || !barUiState.isDayComplete) 0.5f else 1f
-                                    )
-                                ),
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = "下"
-                        )
 
+                        // 最右侧 Build 图标
+                        Icon(
+                            imageVector = Icons.Default.Build,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 16.dp)
+                                .clickable {
+                                    showChat = true
+                                }
+                        )
                     }
-                },
+                }
+                ,
                 bottomBar = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -417,8 +457,21 @@ fun MainScreen(vm: MainViewModel, studyPlanState: StudyPlanState, toStudyPlan: (
 
         else -> {}
     }
+    if (showChat){
+        ChatUI(vm){
+            showChat = false
+        }
+    }
+
+    if(showWordLearning){
+        SpellingTestScreen(centerInfo) {
+            showWordLearning = false
+        }
+    }
 
 }
+
+
 
 
 

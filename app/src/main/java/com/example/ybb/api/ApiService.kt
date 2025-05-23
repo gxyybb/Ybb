@@ -83,4 +83,9 @@ interface ApiService {
         @Query("subjectId") subjectId: Int,
         @Query("token") token: String
     ): ResultVO<List<WordGroupDateGroup>>
+    @POST("/chat")
+    suspend fun chat(
+        @Body request: String
+    ): ResultVO<String>
+
 }
